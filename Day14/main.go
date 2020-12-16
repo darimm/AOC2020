@@ -21,7 +21,7 @@ func readFile(fileName string) ([]string, error) {
 
 func (m *mask) parseLine(line string, registerList map[int]register) bool {
 	s := strings.Split(line, " = ")
-	//If we're updating the subnet mask make m[0] the 2^0 bit
+	//If we're updating the mask make m[0] the 2^0 bit
 	if s[0] == "mask" {
 		for i := 35; i >= 0; i-- {
 			switch s[1][i] {
@@ -41,16 +41,17 @@ func (m *mask) parseLine(line string, registerList map[int]register) bool {
 		fmt.Println("Unable to convert register number to int")
 	}
 
-	bignum, err := strconv.ParseInt(s[1], 10, 36)
+	bignum, err := strconv.ParseInt(s[1], 10, 64)
 	if err != nil {
 		fmt.Println("Error occurred converting bignum", err)
 	}
 
-	bignumBase2 := strconv.FormatInt(bignum, 2)
+	bnb2 := strconv.FormatInt(bignum, 2)
+	bignumBase2 := fmt.Sprintf("%036s", bnb2)
 	returnVal := [36]bool{}
 
-	for i := len(bignumBase2) - 1; i >= 0; i-- {
-		pos := len(bignumBase2) - 1 - i
+	for i := 35; i >= 0; i-- {
+		pos := 35 - i
 		switch m[pos] {
 		case 1:
 			returnVal[pos] = true
@@ -62,7 +63,7 @@ func (m *mask) parseLine(line string, registerList map[int]register) bool {
 				fmt.Println("ERROR: ", err)
 			}
 			if rv == 0 {
-				returnVal[pos] = false || registerList[rval][pos]
+				returnVal[pos] = false
 			} else {
 				returnVal[pos] = true
 			}
