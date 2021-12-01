@@ -7,7 +7,7 @@ for ($index = 0;$index -le $SonarScans.Length;$index++) {
     continue
   }
   
-  if ($SonarScans[$index] -gt $SonarScans[$index-1]) {
+  if ([int]$SonarScans[$index] -gt [int]$SonarScans[$index-1]) {
     $SonarCount++
   }
 }
