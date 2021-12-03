@@ -38,34 +38,34 @@ func main() {
 		if err != nil {
 			continue
 		}
-		if num&0b0000000001 == 1 {
+		if num&0b0000000001 == 0b0000000001 {
 			ParsedBinary[1]++
 		}
-		if num&0b0000000010 == 2 {
+		if num&0b0000000010 == 0b0000000010 {
 			ParsedBinary[2]++
 		}
-		if num&0b0000000100 == 4 {
+		if num&0b0000000100 == 0b0000000100 {
 			ParsedBinary[4]++
 		}
-		if num&0b0000001000 == 8 {
+		if num&0b0000001000 == 0b0000001000 {
 			ParsedBinary[8]++
 		}
-		if num&0b0000010000 == 16 {
+		if num&0b0000010000 == 0b0000010000 {
 			ParsedBinary[16]++
 		}
-		if num&0b0000100000 == 32 {
+		if num&0b0000100000 == 0b0000100000 {
 			ParsedBinary[32]++
 		}
-		if num&0b0001000000 == 64 {
+		if num&0b0001000000 == 0b0001000000 {
 			ParsedBinary[64]++
 		}
-		if num&0b0010000000 == 128 {
+		if num&0b0010000000 == 0b0010000000 {
 			ParsedBinary[128]++
 		}
-		if num&0b0100000000 == 256 {
+		if num&0b0100000000 == 0b0100000000 {
 			ParsedBinary[256]++
 		}
-		if num&0b1000000000 == 512 {
+		if num&0b1000000000 == 0b1000000000 {
 			ParsedBinary[512]++
 		}
 	}
@@ -73,12 +73,15 @@ func main() {
 	gammaRate := 0
 	epsilonRate := 0
 	for k, v := range ParsedBinary {
-		if v > 500 {
+		if v > (len(data)-1)/2 {
+			fmt.Printf("Adding %d to Gamma\r\n", k)
 			gammaRate += k
 		} else {
+			fmt.Printf("Adding %d to Epsilon\r\n", k)
 			epsilonRate += k
 		}
 	}
 
 	fmt.Println(gammaRate, epsilonRate, gammaRate*epsilonRate)
+	fmt.Println(ParsedBinary)
 }
