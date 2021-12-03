@@ -32,41 +32,49 @@ func main() {
 	ParsedBinary[128] = 0
 	ParsedBinary[256] = 0
 	ParsedBinary[512] = 0
+	ParsedBinary[1024] = 0
+	ParsedBinary[2048] = 0
 
 	for _, line := range data {
 		num, err := strconv.ParseInt(line, 2, 0)
 		if err != nil {
 			continue
 		}
-		if num&0b0000000001 == 0b0000000001 {
+		if num&1 == 1 {
 			ParsedBinary[1]++
 		}
-		if num&0b0000000010 == 0b0000000010 {
+		if num&2 == 2 {
 			ParsedBinary[2]++
 		}
-		if num&0b0000000100 == 0b0000000100 {
+		if num&4 == 4 {
 			ParsedBinary[4]++
 		}
-		if num&0b0000001000 == 0b0000001000 {
+		if num&8 == 8 {
 			ParsedBinary[8]++
 		}
-		if num&0b0000010000 == 0b0000010000 {
+		if num&16 == 16 {
 			ParsedBinary[16]++
 		}
-		if num&0b0000100000 == 0b0000100000 {
+		if num&32 == 32 {
 			ParsedBinary[32]++
 		}
-		if num&0b0001000000 == 0b0001000000 {
+		if num&64 == 64 {
 			ParsedBinary[64]++
 		}
-		if num&0b0010000000 == 0b0010000000 {
+		if num&128 == 128 {
 			ParsedBinary[128]++
 		}
-		if num&0b0100000000 == 0b0100000000 {
+		if num&256 == 256 {
 			ParsedBinary[256]++
 		}
-		if num&0b1000000000 == 0b1000000000 {
+		if num&512 == 512 {
 			ParsedBinary[512]++
+		}
+		if num&1024 == 1024 {
+			ParsedBinary[1024]++
+		}
+		if num&2048 == 2048 {
+			ParsedBinary[2048]++
 		}
 	}
 
