@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"io/ioutil"
+	"math"
 	"strconv"
 	"strings"
 )
@@ -15,81 +16,135 @@ func readFile(fileName string) ([]string, error) {
 	return strings.Split(string(fileBytes), "\n"), nil
 }
 
-func main() {
-	data, err := readFile(".\\input.txt")
-	if err != nil {
-		panic(err.Error)
-	}
-
+func countBits(data []string) map[int]int {
 	ParsedBinary := make(map[int]int)
-	ParsedBinary[1] = 0
-	ParsedBinary[2] = 0
-	ParsedBinary[4] = 0
-	ParsedBinary[8] = 0
-	ParsedBinary[16] = 0
-	ParsedBinary[32] = 0
-	ParsedBinary[64] = 0
-	ParsedBinary[128] = 0
-	ParsedBinary[256] = 0
-	ParsedBinary[512] = 0
-	ParsedBinary[1024] = 0
-	ParsedBinary[2048] = 0
+	for mapMake := 1; mapMake <= 2048; mapMake = mapMake << 1 {
+		ParsedBinary[mapMake] = 0
+	}
 
 	for _, line := range data {
 		num, err := strconv.ParseInt(line, 2, 0)
 		if err != nil {
 			continue
 		}
-		if num&1 == 1 {
-			ParsedBinary[1]++
-		}
-		if num&2 == 2 {
-			ParsedBinary[2]++
-		}
-		if num&4 == 4 {
-			ParsedBinary[4]++
-		}
-		if num&8 == 8 {
-			ParsedBinary[8]++
-		}
-		if num&16 == 16 {
-			ParsedBinary[16]++
-		}
-		if num&32 == 32 {
-			ParsedBinary[32]++
-		}
-		if num&64 == 64 {
-			ParsedBinary[64]++
-		}
-		if num&128 == 128 {
-			ParsedBinary[128]++
-		}
-		if num&256 == 256 {
-			ParsedBinary[256]++
-		}
-		if num&512 == 512 {
-			ParsedBinary[512]++
-		}
-		if num&1024 == 1024 {
-			ParsedBinary[1024]++
-		}
-		if num&2048 == 2048 {
-			ParsedBinary[2048]++
+
+		for testVal := int64(1); testVal <= 2048; testVal = testVal << 1 {
+			if num&testVal == testVal {
+				ParsedBinary[int(testVal)]++
+			}
 		}
 	}
+	return ParsedBinary
+}
 
-	gammaRate := 0
-	epsilonRate := 0
-	for k, v := range ParsedBinary {
-		if v > (len(data)-1)/2 {
-			fmt.Printf("Adding %d to Gamma\r\n", k)
+func CalculateGammaEpsilon(bitsMap map[int]int, dataLength int) (gammaRate, epsilonRate int) {
+
+	gammaRate = 0
+	epsilonRate = 0
+	for k, v := range bitsMap {
+		if v > (dataLength-1)/2 {
 			gammaRate += k
 		} else {
-			fmt.Printf("Adding %d to Epsilon\r\n", k)
 			epsilonRate += k
 		}
 	}
+	return gammaRate, epsilonRate
+}
+
+func filterSlice(data []string, testValue int, comparitor func(int, int) bool) []string {
+	dataCopy := make([]string, 0)
+	for k, i := range data {
+		num, err := strconv.ParseInt(i, 2, 0)
+		if err != nil {
+			continue
+		}
+		if comparitor(int(num), testValue) {
+			dataCopy = append(dataCopy, data[k])
+		}
+	}
+	return dataCopy
+}
+
+func compareAnd(val, mask int) bool {
+	if val&mask == mask {
+		return true
+	}
+	return false
+}
+
+func compareXor(val, mask int) bool {
+	if val^mask > val {
+		return true
+	}
+	return false
+}
+
+func OxygenFilter(data []string) int64 {
+	dataCopy := make([]string, 0)
+	dataCopy = append(dataCopy, data...)
+
+	for len(dataCopy) > 1 {
+		for i := 2048; i > 0; i = i >> 1 {
+			temp := countBits(dataCopy)
+			divisor := math.Ceil((float64(len(dataCopy)) / 2))
+			if len(dataCopy) == 1 {
+				break
+			}
+			if temp[i] >= int(divisor) {
+				dataCopy = filterSlice(dataCopy, i, compareAnd)
+			} else {
+				dataCopy = filterSlice(dataCopy, i, compareXor)
+			}
+		}
+	}
+	fmt.Println("Final Oxygen Filter Value: ", dataCopy)
+	num, err := strconv.ParseInt(dataCopy[0], 2, 0)
+	if err != nil {
+		panic("This should definitely never happen")
+	}
+	return num
+}
+
+func CO2Filter(data []string) int64 {
+	dataCopy := make([]string, 0)
+	dataCopy = append(dataCopy, data...)
+
+	for len(dataCopy) > 1 {
+		for i := 2048; i > 0; i = i >> 1 {
+			temp := countBits(dataCopy)
+			divisor := math.Ceil((float64(len(dataCopy)) / 2))
+			if len(dataCopy) == 1 {
+				break
+			}
+			if temp[i] < int(divisor) {
+				dataCopy = filterSlice(dataCopy, i, compareAnd)
+			} else {
+				dataCopy = filterSlice(dataCopy, i, compareXor)
+			}
+		}
+	}
+	fmt.Println("Final CO2 Filter Value: ", dataCopy)
+	num, err := strconv.ParseInt(dataCopy[0], 2, 0)
+	if err != nil {
+		panic("This should definitely never happen")
+	}
+	return num
+}
+
+func main() {
+	data, err := readFile(".\\input.txt")
+	if err != nil {
+		panic(err.Error)
+	}
+
+	bitsMap := countBits(data)
+	gammaRate, epsilonRate := CalculateGammaEpsilon(bitsMap, len(data))
 
 	fmt.Println(gammaRate, epsilonRate, gammaRate*epsilonRate)
-	fmt.Println(ParsedBinary)
+	fmt.Println(bitsMap)
+
+	Oxy := OxygenFilter(data[:len(data)-1])
+	CO2 := CO2Filter(data[:len(data)-1])
+	fmt.Println(Oxy, CO2)
+	fmt.Println(Oxy * CO2)
 }
