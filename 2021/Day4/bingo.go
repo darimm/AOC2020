@@ -94,7 +94,7 @@ func checkRowOrColumn(row []string) bool {
 	return true
 }
 
-func day3p1(data []string) {
+func day4p1(data []string) {
 	bingoNumbers := strings.Split(data[0], ",")
 	var winningCard bingoCard
 	var winningNumber int
@@ -123,7 +123,7 @@ func day3p1(data []string) {
 	fmt.Println("Winning Score of first card to win: ", winningNumber*winningScore)
 }
 
-func day3p2(data []string) {
+func day4p2(data []string) {
 	bingoNumbers := strings.Split(data[0], ",")
 	var winningCard bingoCard
 	var winningNumber int
@@ -164,7 +164,7 @@ func main() {
 		panic(err.Error)
 	}
 
-	day3p1(data)
-	day3p2(data)
+	day4p1(data)
+	day4p2(data)
 
 }
