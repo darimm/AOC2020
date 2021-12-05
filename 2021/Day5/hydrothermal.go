@@ -2,18 +2,11 @@ package main
 
 import (
 	"fmt"
-	"io/ioutil"
 	"strconv"
 	"strings"
-)
 
-func readFile(fileName string) ([]string, error) {
-	fileBytes, err := ioutil.ReadFile(fileName)
-	if err != nil {
-		return nil, err
-	}
-	return strings.Split(string(fileBytes), "\n"), nil
-}
+	aoc "github.com/darimm/AOCFunctions"
+)
 
 type coordinates struct {
 	x, y int
@@ -34,12 +27,12 @@ func (m *mapPoints) initialize() {
 
 func (m *mapPoints) addLineBasic(x1, y1, x2, y2 int) {
 	if x1 == x2 {
-		for y := min(y1, y2); y <= max(y1, y2); y++ {
+		for y := aoc.MinInt(y1, y2); y <= aoc.MaxInt(y1, y2); y++ {
 			m.points[coordinates{x1, y}]++
 		}
 	}
 	if y1 == y2 {
-		for x := min(x1, x2); x <= max(x1, x2); x++ {
+		for x := aoc.MinInt(x1, x2); x <= aoc.MaxInt(x1, x2); x++ {
 			m.points[coordinates{x, y1}]++
 		}
 	}
@@ -47,19 +40,19 @@ func (m *mapPoints) addLineBasic(x1, y1, x2, y2 int) {
 
 func (m *mapPoints) addLineAdvanced(x1, y1, x2, y2 int) {
 	if x1 == x2 {
-		for y := min(y1, y2); y <= max(y1, y2); y++ {
+		for y := aoc.MinInt(y1, y2); y <= aoc.MaxInt(y1, y2); y++ {
 			m.points[coordinates{x1, y}]++
 		}
 	}
 	if y1 == y2 {
-		for x := min(x1, x2); x <= max(x1, x2); x++ {
+		for x := aoc.MinInt(x1, x2); x <= aoc.MaxInt(x1, x2); x++ {
 			m.points[coordinates{x, y1}]++
 		}
 	}
 	if x1 != x2 && y1 != y2 {
 		var xmodifier, ymodifier int
-		xmin := min(x1, x2)
-		xmax := max(x1, x2)
+		xmin := aoc.MinInt(x1, x2)
+		xmax := aoc.MaxInt(x1, x2)
 
 		if x1 > x2 {
 			xmodifier = -1
@@ -85,30 +78,6 @@ func (m *mapPoints) overlappingPoints() int {
 		}
 	}
 	return total
-}
-
-func min(vars ...int) int {
-	min := vars[0]
-
-	for _, i := range vars {
-		if min > i {
-			min = i
-		}
-	}
-
-	return min
-}
-
-func max(vars ...int) int {
-	max := vars[0]
-
-	for _, i := range vars {
-		if max < i {
-			max = i
-		}
-	}
-
-	return max
 }
 
 func getVentCoordinates(data []string) [][]int {
@@ -153,7 +122,7 @@ func day5p2(data []string) {
 }
 
 func main() {
-	data, err := readFile(".\\input.txt")
+	data, err := aoc.ReadFile(".\\input.txt")
 	if err != nil {
 		panic(err.Error)
 	}
